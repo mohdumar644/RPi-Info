@@ -76,9 +76,7 @@ QString MainWindow::getmodel(QString rev)
             model = i.value();
             break;
         }
-        //qDebug(QString(rev+"  "+i.key() + ": "+ i.value() ).toStdString().c_str());
     }
-    //qDebug(model.toStdString().c_str());
     return model;
 }
 
@@ -89,106 +87,119 @@ void MainWindow::about()
 
 void MainWindow::sysinfo()
 {
+    QByteArray result;
+    QString res;
+    int idx;
+
     QProcess qproc;
     qproc.start("uname -mrs");
-    if (!qproc.waitForFinished())
-        return;
-    QByteArray result = qproc.readAll();
-    QString res = QString::fromStdString(result.toStdString());
-    ui->lineEdit_6->setText(res);
+    if (qproc.waitForFinished())
+    {
+        result = qproc.readAll();
+        res = QString::fromStdString(result.toStdString());
+        ui->lineEdit_6->setText(res);
+    }
 
-
+    /*
     qproc.start("lsb_release -a");
-    if (!qproc.waitForFinished())
-        return ;
-    result = qproc.readAll();
-    res=QString::fromStdString(result.toStdString());
-    int idx = res.indexOf("Description:")+13;
-    res = res.mid(idx,res.indexOf("\n",idx)-idx);
-    ui->lineEdit_5->setText(res);
+    if (qproc.waitForFinished())
+    {
+        result = qproc.readAll();
+        res=QString::fromStdString(result.toStdString());
+        idx = res.indexOf("Description:")+13;
+        res = res.mid(idx,res.indexOf("\n",idx)-idx);
+        ui->lineEdit_5->setText(res);
+    }
+    */
 
-
+    qproc.start("cat /etc/os-release");
+    if (qproc.waitForFinished())
+    {
+        result = qproc.readAll();
+        res=QString::fromStdString(result.toStdString());
+        idx = res.indexOf("PRETTY_NAME=")+13;
+        res = res.mid(idx,res.indexOf("\n",idx)-idx-1);
+        ui->lineEdit_5->setText(res);
+    }
 
     qproc.start("vcgencmd get_mem arm");
-    if (!qproc.waitForFinished())
-        return ;
-    result = qproc.readAll();
-    res=QString::fromStdString(result.toStdString());
-    idx = res.indexOf("=");
-    res = res.mid(idx+1);
-    ui->lineEdit_3->setText(res);
+    if (qproc.waitForFinished())
+    {
+        result = qproc.readAll();
+        res=QString::fromStdString(result.toStdString());
+        idx = res.indexOf("=");
+        res = res.mid(idx+1);
+        ui->lineEdit_3->setText(res);
+    }
 
     qproc.start("vcgencmd get_mem gpu");
-    if (!qproc.waitForFinished())
-        return ;
-    result = qproc.readAll();
-    res=QString::fromStdString(result.toStdString());
-    idx = res.indexOf("=");
-    res = res.mid(idx+1);
-    ui->lineEdit_4->setText(res);
+    if (qproc.waitForFinished())
+    {
+        result = qproc.readAll();
+        res=QString::fromStdString(result.toStdString());
+        idx = res.indexOf("=");
+        res = res.mid(idx+1);
+        ui->lineEdit_4->setText(res);
+    }
 
-
-
-
-    //
     qproc.start("lscpu");
-    if (!qproc.waitForFinished())
-        return ;
-    result = qproc.readAll();
-    res=QString::fromStdString(result.toStdString());
-    idx = res.indexOf("Model name:")+12;
-    int idx2 = res.indexOf("CPU(s):")+8;
-    QString cpu = res.mid(idx+1,res.indexOf("\n",idx)-idx).trimmed() + QString("  [") + res.mid(idx2+1,res.indexOf("\n",idx2)-idx2).trimmed()+ QString(" CPUs]");
-    ui->lineEdit_2->setText(cpu);
-
-
+    if (qproc.waitForFinished())
+    {
+        result = qproc.readAll();
+        res=QString::fromStdString(result.toStdString());
+        idx = res.indexOf("Model name:")+12;
+        int idx2 = res.indexOf("CPU(s):")+8;
+        QString cpu = res.mid(idx+1,res.indexOf("\n",idx)-idx).trimmed() + QString("  [") + res.mid(idx2+1,res.indexOf("\n",idx2)-idx2).trimmed()+ QString(" CPUs]");
+        ui->lineEdit_2->setText(cpu);
+    }
 
     qproc.start("cat /proc/cpuinfo");
-    if (!qproc.waitForFinished())
-        return ;
-    result = qproc.readAll();
-    res=QString::fromStdString(result.toStdString());
-    idx = res.indexOf("Revision");
-    idx = res.indexOf(":",idx);
-    QString hw = res.mid(idx+1,res.indexOf("\n",idx)-idx).trimmed();
-    ui->lineEdit->setText(getmodel(hw));
-
+    if (qproc.waitForFinished())
+    {
+        result = qproc.readAll();
+        res=QString::fromStdString(result.toStdString());
+        idx = res.indexOf("Revision");
+        idx = res.indexOf(":",idx);
+        QString hw = res.mid(idx+1,res.indexOf("\n",idx)-idx).trimmed();
+        ui->lineEdit->setText(getmodel(hw));
+    }
 }
 
 int MainWindow::update()
 {
+    QByteArray result;
+    QString res;
     QProcess qproc;
-    qproc.start("cat /sys/class/thermal/thermal_zone0/temp");
-    if (!qproc.waitForFinished())
-        return false;
-    QByteArray result = qproc.readAll();
-    QString res = QString::number(QString::fromStdString(result.toStdString()).toDouble()/1000).left(4);
-    ui->lcdNumber->display(res);
 
+    qproc.start("vcgencmd measure_temp");
+    if (qproc.waitForFinished())
+    {
+        result = qproc.readAll();
+        res=QString::fromStdString(result.toStdString()).mid(5,4);
+        ui->lcdNumber_2->display(res);
+    }
 
-
-    qproc.start("/opt/vc/bin/vcgencmd measure_temp");
-    if (!qproc.waitForFinished())
-        return false;
-    result = qproc.readAll();
-    res=QString::fromStdString(result.toStdString()).mid(5,4);
-    ui->lcdNumber_2->display(res);
-
-
-
-    qproc.start("/opt/vc/bin/vcgencmd measure_volts");
-    if (!qproc.waitForFinished())
-        return false;
-    result = qproc.readAll();
-    res=QString::fromStdString(result.toStdString()).mid(5,4);
-    ui->lcdNumber_3->display(res);
-
+    qproc.start("vcgencmd measure_volts");
+    if (qproc.waitForFinished())
+    {
+        result = qproc.readAll();
+        res=QString::fromStdString(result.toStdString()).mid(5,4);
+        ui->lcdNumber_3->display(res);
+    }
 
     qproc.start("cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq");
-    if (!qproc.waitForFinished())
-        return false;
-    result = qproc.readAll();
-    res = QString::number(QString::fromStdString(result.toStdString()).toDouble()/1000).left(4);
-    ui->lcdNumber_4->display(res);
+    if (qproc.waitForFinished())
+    {
+        result = qproc.readAll();
+        res = QString::number(QString::fromStdString(result.toStdString()).toDouble()/1000).left(4);
+        ui->lcdNumber_4->display(res);
+    }
 
+    qproc.start("cat /sys/class/thermal/thermal_zone0/temp");
+    if (qproc.waitForFinished())
+    {
+        result = qproc.readAll();
+        res = QString::number(QString::fromStdString(result.toStdString()).toDouble()/1000).left(4);
+        ui->lcdNumber->display(res);
+    }
 }
