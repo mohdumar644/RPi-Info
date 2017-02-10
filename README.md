@@ -14,13 +14,13 @@ A ready-to-run binary with all dependencies bundled is [available](https://githu
 It requires FUSE.
 ```
 DEBIAN/UBUNTU/RASPBIAN: sudo apt-get install fuse libfuse-dev
-FEDORA: yum install fuse fuse-devel
+FEDORA: sudo yum install fuse fuse-devel
 ```
 
 To run the binary, do
 
 ```
-sudo chmod a+x ./RPi-Info
+chmod a+x ./RPi-Info
 ./RPi-Info
 ```
 
