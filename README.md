@@ -11,7 +11,13 @@ Binary
 
 A ready-to-run binary with all dependencies bundled is [available](https://github.com/mohdumar644/RPi-Info/raw/master/bin/RPi-Info).
 
-To run, do
+It requires FUSE.
+```
+DEBIAN/UBUNTU/RASPBIAN: sudo apt-get install fuse libfuse-dev
+FEDORA: yum install fuse fuse-devel
+```
+
+To run the binary, do
 
 ```
 sudo chmod a+x ./RPi-Info
