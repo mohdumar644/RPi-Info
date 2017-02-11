@@ -4,7 +4,7 @@ RPi-Info
 Raspberry Pi Hardware & Software Information Reporting Tool 
 
 
-![screen](https://raw.githubusercontent.com/mohdumar644/RPi-Info/master/images/screenshot.png "Screenshot")
+![screen](https://raw.githubusercontent.com/mohdumar644/RPi-Info/master/images/ubuntu-mate.png "Screenshot")
 
 Binary
 -------
