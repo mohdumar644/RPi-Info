@@ -9,7 +9,7 @@ Raspberry Pi Hardware & Software Information Reporting Tool
 Binary
 -------
 
-A ready-to-run binary with all dependencies bundled is [available](https://github.com/mohdumar644/RPi-Info/raw/master/bin/RPi-Info).
+A ready-to-run binary with all dependencies bundled is [available](https://github.com/mohdumar644/RPi-Info/raw/master/bin/RPi-Info) (tested on Raspbian, Ubuntu and FedBerry).
 
 It requires FUSE.
 ```
